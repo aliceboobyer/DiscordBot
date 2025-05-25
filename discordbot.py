@@ -29,6 +29,11 @@
 import discord
 from discord.ext import commands
 import yt_dlp
+import asyncio
+from dotenv import load_dotenv
+load_dotenv()  # Load environment variables from .env file
+import os
+
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -86,4 +91,25 @@ async def play(ctx, *, url):
     voice_client.play(source, after=lambda e: print("Playback finished."))
     await ctx.send(f"▶️ Now playing: **{title}**")
 
-bot.run("") # Replace with your bot token
+@bot.command()
+async def alicebot(ctx):
+    await ctx.send("Heyy I'm AliceBot. Alice made me. Isn't she the best? Ask me to play music with !play 🎶")
+
+@bot.event
+async def on_message(message):
+    # Avoid the bot replying to itself
+    if message.author == bot.user:
+        return
+    
+    content = message.content.lower()
+
+    # Check if the word "alice" is in the message (case-insensitive)
+    if "alice" in content and "alicebot" not in content:
+        await message.channel.send("👀 Are you chatting shit about alice? I'll cut you")
+
+    # Make sure command processing still works
+    await bot.process_commands(message)
+
+
+
+bot.run(os.getenv("DISCORD_API_KEY")) # Replace with your bot token
